@@ -9,7 +9,8 @@ import {
   TableRow,
   TableCell,
   Toolbar,
-  InputAdornment
+  InputAdornment,
+  Box
 } from '@mui/material'
 import makeStyles from '@mui/styles/makeStyles'
 import SearchIcon from '@mui/icons-material/Search'
@@ -26,6 +27,7 @@ import RowEntry from './RowEntry'
 import MyActionButton from '../components/controls/MyActionButton'
 import MyButton from '../components/controls/MyButton'
 import MyInput from '../components/controls/MyInput'
+import MySelect from '../components/controls/MySelect'
 //
 //  Components
 //
@@ -51,11 +53,15 @@ import debugSettings from '../debug/debugSettings'
 //
 const useStyles = makeStyles(theme => ({
   pageContent: {
-    margin: theme.spacing(5),
+    margin: theme.spacing(2),
     padding: theme.spacing(3)
   },
   searchInput: {
-    width: '50%'
+    width: '40%'
+  },
+  searchInputTypeBox: {
+    width: '10%',
+    margin: `0 0 0 ${theme.spacing(2)}`
   },
   newButton: {
     position: 'absolute',
@@ -72,12 +78,22 @@ const headCells = [
   { id: 'qdetail', label: 'Question' },
   { id: 'qgroup1', label: 'Group 1' },
   { id: 'qgroup2', label: 'Group 2' },
+  { id: 'qgroup3', label: 'Group 3' },
   { id: 'actions', label: 'Actions', disableSorting: true }
+]
+const searchTypeOptions = [
+  { id: 'qid', title: 'ID' },
+  { id: 'qowner', title: 'Owner' },
+  { id: 'qkey', title: 'Key' },
+  { id: 'qdetail', title: 'Question' },
+  { id: 'qgroup1', title: 'Group 1' },
+  { id: 'qgroup2', title: 'Group 2' },
+  { id: 'qgroup3', title: 'Group 3' }
 ]
 //
 // Debug Settings
 //
-const g_log1 = debugSettings()
+const g_log1 = debugSettings(true)
 //=====================================================================================
 export default function RowList() {
   if (g_log1) console.log('Start RowList')
@@ -298,6 +314,7 @@ export default function RowList() {
     }
   })
   const [openPopup, setOpenPopup] = useState(false)
+  const [searchType, setSearchType] = useState('qdetail')
   //.............................................................................
   //
   //  Notification
@@ -332,10 +349,44 @@ export default function RowList() {
         //
         //  Filter
         //
-        else
-          return items.filter(x =>
-            x.qdetail.toLowerCase().includes(searchValue)
-          )
+        let itemsFilter = items
+        switch (searchType) {
+          case 'qid':
+            itemsFilter = items.filter(x => x.qid === parseInt(searchValue))
+            break
+          case 'qowner':
+            itemsFilter = items.filter(x =>
+              x.qowner.toLowerCase().includes(searchValue)
+            )
+            break
+          case 'qkey':
+            itemsFilter = items.filter(x =>
+              x.qkey.toLowerCase().includes(searchValue)
+            )
+            break
+          case 'qdetail':
+            itemsFilter = items.filter(x =>
+              x.qdetail.toLowerCase().includes(searchValue)
+            )
+            break
+          case 'qgroup1':
+            itemsFilter = items.filter(x =>
+              x.qgroup1.toLowerCase().includes(searchValue)
+            )
+            break
+          case 'qgroup2':
+            itemsFilter = items.filter(x =>
+              x.qgroup2.toLowerCase().includes(searchValue)
+            )
+            break
+          case 'qgroup3':
+            itemsFilter = items.filter(x =>
+              x.qgroup3.toLowerCase().includes(searchValue)
+            )
+            break
+          default:
+        }
+        return itemsFilter
       }
     })
   }
@@ -415,7 +466,18 @@ export default function RowList() {
               )
             }}
             onChange={handleSearch}
+            onClick={handleSearch}
           />
+          <Box className={classes.searchInputTypeBox}>
+            <MySelect
+              fullWidth={true}
+              name='SearchType'
+              label='Column Heading'
+              value={searchType}
+              onChange={e => setSearchType(e.target.value)}
+              options={searchTypeOptions}
+            />
+          </Box>
           <MyButton
             text='Add New'
             variant='outlined'
@@ -438,6 +500,7 @@ export default function RowList() {
                 <TableCell>{row.qdetail}</TableCell>
                 <TableCell>{row.qgroup1}</TableCell>
                 <TableCell>{row.qgroup2}</TableCell>
+                <TableCell>{row.qgroup3}</TableCell>
                 <TableCell>
                   <MyActionButton
                     color='primary'

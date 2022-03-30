@@ -31,7 +31,7 @@ export default function MySelect(props) {
   } = props
 
   return (
-    <FormControl variant='outlined' {...(error && { error: true })}>
+    <FormControl variant='outlined' {...(error && { error: true })} {...other}>
       <InputLabel>{label}</InputLabel>
       <Select
         label={label}
